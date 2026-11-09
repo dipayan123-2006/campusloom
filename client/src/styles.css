@@ -56,3 +56,29 @@ small{color:var(--mute);font-weight:400}
  .hero{grid-template-columns:1fr;min-height:0}.two{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.tabs{display:flex;gap:.5rem;overflow-x:auto;margin:1rem 0 1.5rem;padding-bottom:.3rem}
+.tabs button{border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:999px;padding:.45rem 1rem;font:600 .95rem inherit;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--ink);color:var(--bg)}
+.avatar{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 1.6rem 'Bricolage Grotesque',sans-serif;border:2px solid var(--ink)}
+.avatar.sm{width:34px;height:34px;font-size:1rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.5rem}
+.stats h2,.center h1{margin:.2em 0}
+.center{text-align:center;display:grid;justify-items:center;gap:.5rem}
+.ring{--p:0;width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--teal) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;position:relative}
+.ring::before{content:'';position:absolute;inset:12px;border-radius:50%;background:var(--card)}
+.ring>*{position:relative}
+.ring.big{width:240px;height:240px;margin:1rem 0}.ring.big::before{inset:16px}
+.clock{font:800 3rem 'Bricolage Grotesque',sans-serif}
+.bar{height:12px;border-radius:12px;background:var(--line);overflow:hidden;width:100%;margin:.6rem 0}
+.bar i{display:block;height:100%;background:var(--saf);transition:width .4s}
+.sw{display:flex;gap:.6rem}.sw button{width:32px;height:32px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.sw button.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--card) inset}
+.tasks{list-style:none;padding:0;display:grid;gap:.6rem}
+.tasks li{display:flex;align-items:center;gap:.8rem}.tasks .t{flex:1;min-width:0}
+.tasks .done .t{text-decoration:line-through;opacity:.55}
+.mini{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:.7rem 1rem}
+.mini.me{border-color:var(--saf)}
+.late{color:var(--coral)}
+.ghost.pick{background:var(--ink);color:var(--bg)}
+.faq summary{cursor:pointer;font-weight:600}.faq{margin-bottom:.6rem}
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;padding-top:0}

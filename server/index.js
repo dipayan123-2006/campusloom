@@ -25,7 +25,9 @@ const COURSES = [
 
 const sign = (s) => jwt.sign({ id: s._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 const safe = (s) => ({ id: s._id, name: s.name, email: s.email, department: s.department,
-  year: s.year, rollNo: s.rollNo, courses: s.courses, joined: s.createdAt });
+  year: s.year, rollNo: s.rollNo, courses: s.courses, joined: s.createdAt, avatar: s.avatar,
+  focusMinutes: s.focusMinutes, streak: s.streak,
+  tasks: s.tasks.map((t) => ({ id: t._id, title: t.title, due: t.due, done: t.done })) });
 
 async function auth(req, res, next) {
   try {
@@ -74,6 +76,56 @@ app.post('/api/me/courses/:code', auth, async (req, res) => {
   s.courses = s.courses.includes(code) ? s.courses.filter((c) => c !== code) : [...s.courses, code];
   await s.save();
   res.json(safe(s));
+});
+
+app.put('/api/me', auth, async (req, res) => {
+  const { name, year, avatar } = req.body;
+  const s = req.student;
+  if (name && name.trim()) s.name = name.trim();
+  if (year >= 1 && year <= 5) s.year = year;
+  if (/^#[0-9A-Fa-f]{6}$/.test(avatar || '')) s.avatar = avatar;
+  await s.save();
+  res.json(safe(s));
+});
+
+app.post('/api/me/tasks', auth, async (req, res) => {
+  const { title, due } = req.body;
+  if (!title || !title.trim()) return res.status(400).json({ message: 'Give the task a title.' });
+  req.student.tasks.push({ title, due });
+  await req.student.save();
+  res.status(201).json(safe(req.student));
+});
+
+app.patch('/api/me/tasks/:id', auth, async (req, res) => {
+  const t = req.student.tasks.id(req.params.id);
+  if (!t) return res.status(404).json({ message: 'Task not found.' });
+  t.done = !t.done;
+  await req.student.save();
+  res.json(safe(req.student));
+});
+
+app.delete('/api/me/tasks/:id', auth, async (req, res) => {
+  req.student.tasks.pull({ _id: req.params.id });
+  await req.student.save();
+  res.json(safe(req.student));
+});
+
+app.post('/api/me/focus', auth, async (req, res) => {
+  const minutes = Math.min(180, Math.max(1, Number(req.body.minutes) || 0));
+  const s = req.student;
+  const day = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  if (s.lastFocusDay !== day) s.streak = s.lastFocusDay === yesterday ? s.streak + 1 : 1;
+  s.lastFocusDay = day;
+  s.focusMinutes += minutes;
+  await s.save();
+  res.json(safe(s));
+});
+
+app.get('/api/leaderboard', auth, async (req, res) => {
+  const top = await Student.find({ focusMinutes: { $gt: 0 } }).sort({ focusMinutes: -1 }).limit(5);
+  res.json(top.map((t) => ({ id: t._id, name: t.name.split(' ')[0], department: t.department,
+    minutes: t.focusMinutes, streak: t.streak, avatar: t.avatar })));
 });
 
 app.post('/api/contact', async (req, res) => {

@@ -27,6 +27,12 @@ export default function Contact() {
         {msg.text && <p className={msg.ok ? 'ok' : 'err'} role="status">{msg.text}</p>}
         <button className="btn">Send message</button>
       </form>
+      <h2>Quick answers</h2>
+      {[['How do I get my roll number?', 'It is generated automatically when you register.'],
+        ['I forgot my password.', 'Send us a message here with your registered email and we will help.'],
+        ['How do streaks work?', 'Finish at least one focus session per day to keep your streak going.']].map(([q, a]) => (
+        <details key={q} className="mini faq"><summary>{q}</summary><p>{a}</p></details>
+      ))}
     </section>
   );
 }
